@@ -3,8 +3,8 @@
     "variables": {
       "aws_access_key": "",
       "aws_secret_key": "",
-      "region": "us-east-1",
-      "source_ami":"ami-083602cee93914c0c",
+      "region": "us -east-1",
+      "source_ami":"ami-0e472ba40eb589f49",
       "instance_type":"t2.micro",
       "vpc_id": "vpc-05e4a52329156c806",
       "subnet_id": "subnet-0f02375cca944d6cb"
@@ -18,8 +18,7 @@
       "region": "{{user `region`}}",
       "source_ami": "{{user `source_ami`}}",
       "instance_type": "{{user `instance_type`}}",
-      "ssh_username": "ec2-user",
-      "ssh_timeout": "15m",
+      "ssh_username": "ubuntu",
       "ami_name": "DevOpsClass-B18-Build-{{isotime | clean_resource_name}}",
       "vpc_id": "{{user `vpc_id`}}",
       "subnet_id": "{{user `subnet_id`}}",
@@ -31,19 +30,33 @@
       "type": "shell",
       "inline": [
         "sleep 30",
-        "sudo yum update -y",
-        "sudo amazon-linux-extras install nginx1 -y",
-        "sudo yum install git -y",
-        "sudo git clone https://github.com/Gowthami749/webhooktesting.git",
-        "sudo rm -rf /usr/share/nginx/html/index.nginx-debian.html",
-        "sudo cp webhooktesting/index.html /usr/share/nginx/html/index.nginx-debian.html",
-        "sudo cp webhooktesting/style.css /usr/share/nginx/html/style.css",
-        "sudo cp webhooktesting/scorekeeper.js /usr/share/nginx/html/scorekeeper.js",
+        "sudo apt update -y",
+        "sudo apt install nginx -y",
+        "sudo apt install git -y",
+        "sudo git clone https://github.com/mavrick202/webhooktesting.git",
+        "sudo rm -rf /var/www/html/index.nginx-debian.html",
+        "sudo cp webhooktesting/index.html /var/www/html/index.nginx-debian.html",
+        "sudo cp webhooktesting/style.css /var/www/html/style.css",
+        "sudo cp webhooktesting/scorekeeper.js /var/www/html/scorekeeper.js",
         "sudo service nginx start",
-        "sudo systemctl enable nginx"
+        "sudo systemctl enable nginx",
+        "curl https://get.docker.com | bash"
         ]
-    }
+    },
+    {
+            "type": "file",
+            "source": "docker.service",
+            "destination": "/tmp/docker.service"
+    },
+    {
+        "type": "shell",
+        "inline": [
+            "sudo cp /tmp/docker.service /lib/systemd/system/docker.service",
+            "sudo usermod -a -G docker ubuntu",
+            "sudo systemctl daemon-reload",
+            "sudo service docker restart"
+        ]
 
-  ]
-}
-  
+    }
+]
+  }
